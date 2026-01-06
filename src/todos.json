@@ -1,0 +1,50 @@
+{
+  "todo": [
+    {
+      "id": 1,
+      "title": "Design kanban board layout"
+    },
+    {
+      "id": 2,
+      "title": "Implement drag and drop functionality"
+    },
+    {
+      "id": 9,
+      "title": "Add search functionality"
+    }
+  ],
+  "doing": [
+    {
+      "id": 3,
+      "title": "Add keyboard shortcuts"
+    },
+    {
+      "id": 4,
+      "title": "Create todo input form"
+    },
+    {
+      "id": 10,
+      "title": "Implement filtering options"
+    }
+  ],
+  "done": [
+    {
+      "id": 5,
+      "title": "Add color coding for priorities"
+    },
+    {
+      "id": 6,
+      "title": "Implement data persistence"
+    }
+  ],
+  "wont-do": [
+    {
+      "id": 7,
+      "title": "Add animations for card movements"
+    },
+    {
+      "id": 8,
+      "title": "Create mobile responsive design"
+    }
+  ]
+}
