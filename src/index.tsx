@@ -2,11 +2,13 @@ import { createCliRenderer } from "@opentui/core"
 import { useState, useCallback } from "react"
 import initialTodos from './todos.json';
 import { createRoot, useKeyboard } from "@opentui/react"
-import { Column } from "./Column"
-import type { TodosByStatus } from "./Column"
+import { Column } from "./column"
+import type { TodosByStatus } from "./column"
 import { logToFile } from "./logger"
 
 type FocusedArea = "input" | "todo" | "doing" | "done" | "wont-do"
+const mainColor = "yellow";
+const secondaryColor = "#6a5acd";
 
 function App() {
   const [todos, setTodos] = useState<TodosByStatus>(initialTodos);
@@ -33,6 +35,7 @@ function App() {
         id: Math.max(...Object.values(prev).flat().map(t => t.id)) + 1,
       }]
     }));
+    setTodo("");
   }, [todo, todos])
 
   const handleMoveTodo = useCallback((todoId: number, fromStatus: keyof TodosByStatus, toStatus: keyof TodosByStatus) => {
@@ -91,9 +94,10 @@ function App() {
         />
       </box>
 
-      <box title="Todo" style={{ border: true, width: 40, height: 3, borderColor: focused === "input" ? "yellow" : undefined }}>
+      <box title="Todo" border width={40} height={3} borderColor={focused === "input" ? "yellow" : undefined}>
         <input
           placeholder="Enter todo..."
+          value={todo}
           onInput={setTodo}
           onSubmit={handleSubmit}
           focused={focused === "input"}
