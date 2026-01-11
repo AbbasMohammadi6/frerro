@@ -1,7 +1,7 @@
 import { createContext, use, useReducer, type ReactNode } from 'react';
 import type { Action, State } from './types';
 import { reducer } from './reducer';
-import tasks from './tasks.json';
+import tasks from '../tasks.json';
 
 const stateContext = createContext<State | undefined>(undefined);
 const dispatchContext = createContext<React.ActionDispatch<[action: Action]> | undefined>(undefined);
@@ -10,6 +10,7 @@ const initialState: State = {
   focusedArea: 'input',
   focusedTodo: null,
   tasks,
+  currentModal: null,
 };
 
 type Props = {
