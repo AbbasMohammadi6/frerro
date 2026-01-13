@@ -1,12 +1,12 @@
 import { useKeyboard } from "@opentui/react"
 import { useState } from "react"
-import type { Task } from "../providers/types"
+import type { Status, Task } from "../providers/types"
 import { useAppState, useAppDispatch } from "../providers"
 import { theme } from "../theme/theme"
 import { Modal } from "./modal"
-import { logToFile } from "../utils/logger"
 import { useInvalidate, useTasks } from "../providers/tasks"
 import { db } from "../utils/db"
+import { MoveModal } from "./move-modal"
 
 interface Todo {
   id: number
@@ -83,7 +83,6 @@ export function Column({ title, status }: ColumnProps) {
     if (currentModal !== 'removeTask') return;
 
     if (key.name === 'y' && currentTask) {
-      logToFile('remvoing the task...');
       db.run('DELETE FROM tasks WHERE id IS ?', [currentTask.id]);
       setCurrentTask(null);
       invalidateTasks();
@@ -98,13 +97,6 @@ export function Column({ title, status }: ColumnProps) {
 
   useKeyboard((key) => {
     if (currentModal !== 'moveTask') return;
-
-    // logToFile('remvoing the task...');
-    // // dispatch({ type: 'REMOVE_TASK', payload: { taskId: currentTask.id, status } });
-    // db.run('DELETE FROM tasks WHERE id IS ?', [currentTask.id]);
-    // setCurrentTask(null);
-    // invalidateTasks();
-    // dispatch({ type: 'ADD_MODAL', payload: null });
 
     if (key.name === 'escape') {
       dispatch({ type: 'ADD_MODAL', payload: null });
@@ -136,20 +128,8 @@ export function Column({ title, status }: ColumnProps) {
         </Modal>
       )}
 
-
-      {currentModal === 'moveTask' && (
-        <Modal>
-          <box borderColor={theme.cyan} title="Move Task...">
-            <select focused height={3} width={'100%'} options={[
-              { description: 'Doing', name: 'doing' },
-              { description: 'Done', name: 'done' },
-              { description: "Wont' Do", name: 'wont-do' },
-            ]} />
-            <text>
-              Are you sure to remove <span fg={theme.red}>{currentTask?.title}</span>? y/n
-            </text>
-          </box>
-        </Modal>
+      {currentModal === 'moveTask' && currentTask && (
+        <MoveModal currentTask={currentTask} status={status} />
       )}
     </>
   )

@@ -5,9 +5,6 @@ import { Modal } from "./modal";
 import { useAppDispatch, useAppState } from "../providers";
 import type { State, Status } from "../providers/types";
 import { theme } from "../theme/theme";
-// import { useEffect } from "react";
-// import { db } from "../utils/db";
-// import { logToFile } from "../utils/logger";
 
 const columns: Array<{ title: string, status: Status }> = [
   { title: "Todo (1)", status: "todo" },
@@ -19,12 +16,6 @@ const columns: Array<{ title: string, status: Status }> = [
 export function App() {
   const dispatch = useAppDispatch();
   const { focusedArea, currentModal } = useAppState();
-
-  // useEffect(() => {
-  //   const asdf = db.query("select * from tasks");
-  //   logToFile(JSON.stringify(asdf.all()));
-  //   return () => db.close();
-  // }, []);
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
