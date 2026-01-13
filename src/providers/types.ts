@@ -1,4 +1,4 @@
-type Status = 'todo' | 'doing' | 'done' | 'wont-do';
+export type Status = 'todo' | 'doing' | 'done' | 'wont-do';
 
 export type Task = {
   id: number,

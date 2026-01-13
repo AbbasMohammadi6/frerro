@@ -5,17 +5,19 @@ import { Modal } from "./modal";
 import { useAppDispatch, useAppState } from "../providers";
 import type { State } from "../providers/types";
 import { theme } from "../theme/theme";
-
-// const TASKS_PATH = join(import.meta.dir, "..", "tasks.json")
+import { useEffect } from "react";
+import { db } from "../utils/db";
+import { logToFile } from "../utils/logger";
 
 export function App() {
   const dispatch = useAppDispatch();
-  const { focusedArea, currentModal, tasks } = useAppState();
+  const { focusedArea, currentModal } = useAppState();
 
-  // useEffect(() => {
-    // TODO: find a way to write to file without rerendering the app
-    // writeFile(TASKS_PATH, JSON.stringify(tasks), () => void 0);
-  // }, [tasks]);
+  useEffect(() => {
+    const asdf = db.query("select * from tasks");
+    logToFile(JSON.stringify(asdf.all()));
+    return () => db.close();
+  }, []);
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -33,6 +35,11 @@ export function App() {
     if (key.name === 'n') {
       dispatch({ type: 'ADD_MODAL', payload: 'newTask' });
     }
+
+    if (key.name === 'q') {
+      process.exit(0);
+    }
+
   });
 
   return (
