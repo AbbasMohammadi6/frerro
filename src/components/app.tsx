@@ -15,20 +15,10 @@ const columns: Array<{ title: string, status: Status }> = [
 
 export function App() {
   const dispatch = useAppDispatch();
-  const { focusedArea, currentModal } = useAppState();
+  const { currentModal } = useAppState();
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
-
-    if (key.name === "tab") {
-      const areas: State['focusedArea'][] = ["todo", "doing", "done", "wont-do"]
-      const currentIndex = areas.indexOf(focusedArea)
-      const nextIndex = (currentIndex + 1) % areas.length
-      const nextArea = areas[nextIndex]
-      if (nextArea) {
-        dispatch({ type: 'FOCUS_AREA', payload: nextArea });
-      }
-    }
 
     if (!Number.isNaN(Number(key.name))) {
       const currentColumn = columns[+key.name - 1];
@@ -38,11 +28,6 @@ export function App() {
     if (key.name === 'n') {
       dispatch({ type: 'ADD_MODAL', payload: 'newTask' });
     }
-
-    if (key.name === 'q') {
-      process.exit(0);
-    }
-
   });
 
   return (

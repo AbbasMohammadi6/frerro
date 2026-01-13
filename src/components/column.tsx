@@ -1,5 +1,5 @@
 import { useKeyboard } from "@opentui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { Task } from "../providers/types"
 import { useAppState, useAppDispatch } from "../providers"
 import { theme } from "../theme/theme"
@@ -30,24 +30,19 @@ export function Column({ title, status }: ColumnProps) {
   const focused = focusedArea === status;
   const columnTasks = tasks[status];
   const [currentTask, setCurrentTask] = useState<null | Task>(null);
-  const selected = currentTask !== null;
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (status === focusedArea) {
+      const firstTask = columnTasks[0];
+      if (firstTask) setCurrentTask(firstTask);
+    }
+    else setCurrentTask(null);
+  }, [status, focusedArea]);
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
-
     if (!focused) return
-
-    if (key.name === "return") {
-      const firstTask = columnTasks[0];
-      if (firstTask) {
-        setCurrentTask(firstTask);
-      }
-    }
-
-    if (key.name === "tab") {
-      setCurrentTask(null);
-    }
 
     if (currentTask) {
       const currentIndex = columnTasks.findIndex(todo => todo.id === currentTask.id);
@@ -62,10 +57,6 @@ export function Column({ title, status }: ColumnProps) {
         if (prevTodo) setCurrentTask(prevTodo);
       }
 
-      if (key.name === "q") {
-        setCurrentTask(null);
-      }
-
       if (key.name === "-") {
         dispatch({ type: 'ADD_MODAL', payload: 'removeTask' });
       }
@@ -73,12 +64,11 @@ export function Column({ title, status }: ColumnProps) {
       if (key.name === 'm' && currentTask) {
         dispatch({ type: 'ADD_MODAL', payload: 'moveTask' });
       }
-
     }
   })
 
 
-  const borderColor = selected ? theme.light_blue : focused ? theme.info_yellow : undefined;
+  const borderColor = focused ? theme.info_yellow : undefined;
 
   return (
     <>
