@@ -6,7 +6,6 @@ import { useKeyboard } from "@opentui/react";
 import { useAppDispatch, useAppState } from "../providers";
 import { useInvalidate } from "../providers/tasks";
 import { db } from "../utils/db";
-import { logToFile } from "../utils/logger";
 
 type Props = {
   currentTask: Task;

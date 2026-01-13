@@ -26,7 +26,7 @@ export default function Input() {
       border
       width='100%'
       height={3}
-      borderColor={theme.info_yellow}
+      borderColor={theme.cyan}
       title='Enter your new task...'
     >
       <input
