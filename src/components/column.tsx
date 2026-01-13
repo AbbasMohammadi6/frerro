@@ -6,6 +6,7 @@ import { theme } from "../theme/theme"
 import { useTasks } from "../providers/tasks"
 import { MoveModal } from "./move-modal"
 import RemoveModal from "./remove-modal"
+import { EditModal } from "./edit-modal"
 
 interface Todo {
   id: number
@@ -64,6 +65,10 @@ export function Column({ title, status }: ColumnProps) {
       if (key.name === 'm' && currentTask) {
         dispatch({ type: 'ADD_MODAL', payload: 'moveTask' });
       }
+
+      if (key.name === 'e' && currentTask) {
+        dispatch({ type: 'ADD_MODAL', payload: 'editTask' });
+      }
     }
   })
 
@@ -89,6 +94,10 @@ export function Column({ title, status }: ColumnProps) {
 
       {currentModal === 'moveTask' && currentTask && (
         <MoveModal currentTask={currentTask} status={status} />
+      )}
+
+      {currentModal === 'editTask' && currentTask && (
+        <EditModal currentTask={currentTask} />
       )}
     </>
   )

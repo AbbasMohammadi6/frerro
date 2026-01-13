@@ -40,6 +40,5 @@ export default function RemoveModal(props: Props) {
         </text>
       </box>
     </Modal>
-
   );
 }

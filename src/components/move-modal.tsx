@@ -1,10 +1,9 @@
-import { useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 import type { Status, Task } from "../providers/types";
 import { theme } from "../theme/theme";
-import { logToFile } from "../utils/logger";
 import { Modal } from "./modal";
 import Select from "./select-status";
-import { db, reverseStatus, status as statusMap } from "../utils/db";
+import { db, status as statusMap } from "../utils/db";
 import { useInvalidate } from "../providers/tasks";
 import { useKeyboard } from "@opentui/react"
 import { useAppDispatch, useAppState } from "../providers";
