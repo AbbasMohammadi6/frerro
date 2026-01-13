@@ -54,6 +54,7 @@ export function Column({ title, status }: ColumnProps) {
       }
 
       if (key.name === "k") {
+        if (currentIndex === 0) return;
         const prevTodo = columnTasks.at(currentIndex - 1);
         if (prevTodo) setCurrentTask(prevTodo);
       }
