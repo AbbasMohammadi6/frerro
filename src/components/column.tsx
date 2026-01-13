@@ -5,6 +5,8 @@ import { useAppState, useAppDispatch } from "../providers"
 import { theme } from "../theme/theme"
 import { Modal } from "./modal"
 import { logToFile } from "../utils/logger"
+import { useInvalidate, useTasks } from "../providers/tasks"
+import { db } from "../utils/db"
 
 interface Todo {
   id: number
@@ -24,12 +26,14 @@ interface ColumnProps {
 }
 
 export function Column({ title, status }: ColumnProps) {
-  const { tasks, focusedArea, currentModal } = useAppState();
+  const { focusedArea, currentModal } = useAppState();
+  const tasks = useTasks();
   const focused = focusedArea === status;
   const columnTasks = tasks[status];
   const [currentTask, setCurrentTask] = useState<null | Task>(null);
   const selected = currentTask !== null;
   const dispatch = useAppDispatch();
+  const invalidateTasks = useInvalidate();
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -68,6 +72,10 @@ export function Column({ title, status }: ColumnProps) {
         dispatch({ type: 'ADD_MODAL', payload: 'removeTask' });
       }
 
+      if (key.name === 'm' && currentTask) {
+        dispatch({ type: 'ADD_MODAL', payload: 'moveTask' });
+      }
+
     }
   })
 
@@ -76,11 +84,29 @@ export function Column({ title, status }: ColumnProps) {
 
     if (key.name === 'y' && currentTask) {
       logToFile('remvoing the task...');
-      dispatch({ type: 'REMOVE_TASK', payload: { taskId: currentTask.id, status } });
+      db.run('DELETE FROM tasks WHERE id IS ?', [currentTask.id]);
       setCurrentTask(null);
+      invalidateTasks();
+      dispatch({ type: 'ADD_MODAL', payload: null });
     }
 
     if (key.name === 'n' || key.name === 'escape') {
+      dispatch({ type: 'ADD_MODAL', payload: null });
+    }
+  });
+
+
+  useKeyboard((key) => {
+    if (currentModal !== 'moveTask') return;
+
+    // logToFile('remvoing the task...');
+    // // dispatch({ type: 'REMOVE_TASK', payload: { taskId: currentTask.id, status } });
+    // db.run('DELETE FROM tasks WHERE id IS ?', [currentTask.id]);
+    // setCurrentTask(null);
+    // invalidateTasks();
+    // dispatch({ type: 'ADD_MODAL', payload: null });
+
+    if (key.name === 'escape') {
       dispatch({ type: 'ADD_MODAL', payload: null });
     }
   });
@@ -103,6 +129,22 @@ export function Column({ title, status }: ColumnProps) {
       {currentModal === 'removeTask' && (
         <Modal>
           <box borderColor={theme.cyan} title="Remove Task...">
+            <text>
+              Are you sure to remove <span fg={theme.red}>{currentTask?.title}</span>? y/n
+            </text>
+          </box>
+        </Modal>
+      )}
+
+
+      {currentModal === 'moveTask' && (
+        <Modal>
+          <box borderColor={theme.cyan} title="Move Task...">
+            <select focused height={3} width={'100%'} options={[
+              { description: 'Doing', name: 'doing' },
+              { description: 'Done', name: 'done' },
+              { description: "Wont' Do", name: 'wont-do' },
+            ]} />
             <text>
               Are you sure to remove <span fg={theme.red}>{currentTask?.title}</span>? y/n
             </text>

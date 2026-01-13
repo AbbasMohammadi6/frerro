@@ -7,8 +7,7 @@ const stateContext = createContext<State | undefined>(undefined);
 const dispatchContext = createContext<React.ActionDispatch<[action: Action]> | undefined>(undefined);
 
 const initialState: State = {
-  focusedArea: 'input',
-  focusedTodo: null,
+  focusedArea: 'todo',
   tasks,
   currentModal: null,
 };

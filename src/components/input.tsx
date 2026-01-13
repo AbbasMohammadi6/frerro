@@ -3,21 +3,22 @@ import { useKeyboard } from '@opentui/react';
 import { useAppDispatch, useAppState } from '../providers';
 import { theme } from '../theme/theme';
 import { db } from '../utils/db';
+import { useInvalidate } from '../providers/tasks';
 
 export default function Input() {
   const [todo, setTodo] = useState("")
   const { currentModal } = useAppState();
   const dispatch = useAppDispatch();
+  const invalidateTasks = useInvalidate();
 
   useKeyboard((key) => {
     if (key.name === "escape" && currentModal === 'newTask') dispatch({ type: 'ADD_MODAL', payload: null });
   });
 
   const handleSubmit = async () => {
-    const newTodo = { title: todo, id: Math.random() };
-    dispatch({ type: 'ADD_TODO', payload: newTodo });
-    db.run('insert into tasks (title, status) values (?, 1)', [todo]);
+    db.run('INSERT INTO TASKS (title, status) VALUES (?, 1)', [todo]);
     setTodo("")
+    invalidateTasks();
   }
 
   return (

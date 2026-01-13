@@ -6,7 +6,7 @@ export type Task = {
 }
 
 export type Tasks = Record<Status, Task[]>;
-type CurrentModal = "newTask" | "removeTask" | null;
+type CurrentModal = "newTask" | "removeTask" | 'moveTask' | null;
 
 export type State = {
   focusedArea: Status;

@@ -3,21 +3,28 @@ import { Column } from "./column"
 import Input from "./input";
 import { Modal } from "./modal";
 import { useAppDispatch, useAppState } from "../providers";
-import type { State } from "../providers/types";
+import type { State, Status } from "../providers/types";
 import { theme } from "../theme/theme";
-import { useEffect } from "react";
-import { db } from "../utils/db";
-import { logToFile } from "../utils/logger";
+// import { useEffect } from "react";
+// import { db } from "../utils/db";
+// import { logToFile } from "../utils/logger";
+
+const columns: Array<{ title: string, status: Status }> = [
+  { title: "Todo (1)", status: "todo" },
+  { title: "Doing (2)", status: "doing" },
+  { title: "Done (3)", status: "done" },
+  { title: "Won't Do (4)", status: "wont-do" },
+];
 
 export function App() {
   const dispatch = useAppDispatch();
   const { focusedArea, currentModal } = useAppState();
 
-  useEffect(() => {
-    const asdf = db.query("select * from tasks");
-    logToFile(JSON.stringify(asdf.all()));
-    return () => db.close();
-  }, []);
+  // useEffect(() => {
+  //   const asdf = db.query("select * from tasks");
+  //   logToFile(JSON.stringify(asdf.all()));
+  //   return () => db.close();
+  // }, []);
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -32,6 +39,11 @@ export function App() {
       }
     }
 
+    if (!Number.isNaN(Number(key.name))) {
+      const currentColumn = columns[+key.name - 1];
+      if (currentColumn) dispatch({ type: 'FOCUS_AREA', payload: currentColumn.status });
+    }
+
     if (key.name === 'n') {
       dispatch({ type: 'ADD_MODAL', payload: 'newTask' });
     }
@@ -43,13 +55,12 @@ export function App() {
   });
 
   return (
-    <box position="relative" backgroundColor={currentModal ? theme.popup_back : theme.bg}>
+    <box backgroundColor={currentModal ? theme.popup_back : theme.bg}>
 
       <box flexDirection={'row'} padding={1} gap={1} height='100%'>
-        <Column title="Todo" status="todo" />
-        <Column title="Doing" status="doing" />
-        <Column title="Done" status="done" />
-        <Column title="Won't Do" status="wont-do" />
+        {columns.map(({ title, status }) => (
+          <Column title={title} status={status} />
+        ))}
       </box>
 
       {currentModal === 'newTask' && (<Modal><Input /></Modal>)}
