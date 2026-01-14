@@ -10,9 +10,8 @@ type Task = {
 
 type Tasks = Record<Status, Omit<Task, 'status'>[]>;
 
-function getTasks() {
-  const query = db.query<Task, any>('select * from tasks');
-  const tasks = query.all();
+function getTasks(collectionId: number) {
+  const tasks = db.query<Task, any>('SELECT * FROM tasks WHERE collection_id = ?').all(collectionId);
   return tasks.reduce((acc, item) => {
     const { status, ...rest } = item;
     const statusStr = reverseStatus[item.status];
@@ -26,14 +25,15 @@ const tasksContext = createContext<Tasks | undefined>(undefined);
 
 type Props = {
   children: ReactNode;
+  collectionId: number
 }
 
 export function TasksProvider(props: Props) {
-  const { children } = props;
-  const [tasks, setTasks] = useState<Tasks>(getTasks /* move this to useEffect */);
+  const { children, collectionId } = props;
+  const [tasks, setTasks] = useState<Tasks>(() => getTasks(collectionId) /* move this to useEffect */);
 
   const invalidate = () => {
-    const updatedTasks = getTasks();
+    const updatedTasks = getTasks(collectionId);
     setTasks(updatedTasks);
   }
 

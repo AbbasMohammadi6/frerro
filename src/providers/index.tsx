@@ -16,7 +16,8 @@ type Props = {
   children: ReactNode;
 }
 
-export function Provider(props: Props) {
+// TODO: change my name
+export function UiProvider(props: Props) {
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -29,12 +30,12 @@ export function Provider(props: Props) {
 
 export function useAppState() {
   const state = use(stateContext);
-  if (state === undefined) throw new Error('useAppState must be used with Provider');
+  if (state === undefined) throw new Error('useAppState must be used with TasksUiProvider');
   return state;
 }
 
 export function useAppDispatch() {
   const dispatch = use(dispatchContext);
-  if (dispatch === undefined) throw new Error('useAppDispatch must be used with Provider');
+  if (dispatch === undefined) throw new Error('useAppDispatch must be used with TasksUiProvider');
   return dispatch;
 }

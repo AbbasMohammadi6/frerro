@@ -15,20 +15,20 @@ export function EditModal(props: Props) {
   const { currentTask } = props;
   const { currentModal } = useAppState();
   const dispatch = useAppDispatch();
-  const [value, setValue] = useState(currentTask.title);
+  const [title, setTitle] = useState(currentTask.title);
+  const [description, setDescription] = useState(currentTask.description ?? '')
+  const [focused, setFocused] = useState<'title' | 'description'>("title")
   const invalidateTasks = useInvalidate();
-
-  const onChange = (val: string) => {
-    setValue(val);
-  }
 
   useKeyboard((key) => {
     if (currentModal !== 'editTask') return;
     if (key.name === 'return') {
-      db.run('UPDATE tasks SET title = ? WHERE ID = ?', [value, currentTask.id]);
+      db.run('UPDATE tasks SET title = ?, description = ? WHERE ID = ?', [title, description, currentTask.id]);
       invalidateTasks();
       dispatch({ type: 'ADD_MODAL', payload: null });
     }
+
+    if (key.name === 'tab') setFocused(prev => prev === 'title' ? 'description' : 'title');
 
     if (key.name === 'escape') {
       dispatch({ type: 'ADD_MODAL', payload: null });
@@ -37,8 +37,27 @@ export function EditModal(props: Props) {
 
   return (
     <Modal>
-      <box border width='100%' height={3} borderColor={theme.cyan} title="Edit Task...">
-        <input focused value={value} onInput={onChange} />
+      <box border width='100%' height={'auto'} borderColor={theme.cyan} title="Edit Task...">
+        <box borderColor={theme.gray}>
+          <input
+            height={1}
+            value={title}
+            onInput={setTitle}
+            placeholder='Title'
+            focused={focused === 'title'}
+            backgroundColor={theme.bg}
+          />
+        </box>
+
+        <box borderColor={theme.gray}>
+          <input
+            height={1}
+            value={description}
+            onInput={setDescription}
+            placeholder='Description'
+            focused={focused === 'description'}
+          />
+        </box>
       </box>
     </Modal>
   );

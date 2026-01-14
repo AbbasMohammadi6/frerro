@@ -1,0 +1,25 @@
+Tree Structure:
+* We should have "collections", where the user could store the todos for a certain subject
+* each "collection" must be under a "category", the user is not required to create a category, the default category is called "root" that means the "collection" is in the no root with no category
+* Should be able to move collections to a different category
+
+Screens:
+1. no-collection
+  ui: there is no collection, create one?, an input for creating a collection
+  once the collection is created move to the tasks view of that collection
+2. collections
+  * there are collections and categories, there is an input where the user could search for collections
+  * there is a tree structure under the input where the user could find the collection manually
+  * crud for collection
+  * crud for category
+  * move collection between categories
+3. tasks
+  * there is four columns, "todo", "doing", "done" and "wont-do"
+  * do basic crud for tasks
+
+Data Structures:
+Task: title, description, id, collection_id
+  id is the primary key, the title in each collection must be unique
+Collection: title, id, category_id
+  id is the primary key, title should be unique
+Category: title, id

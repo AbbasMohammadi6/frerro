@@ -3,10 +3,10 @@ import { useEffect, useState } from "react"
 import type { Task } from "../providers/types"
 import { useAppState, useAppDispatch } from "../providers"
 import { theme } from "../theme/theme"
-import { useTasks } from "../providers/tasks"
 import { MoveModal } from "./move-modal"
 import RemoveModal from "./remove-modal"
 import { EditModal } from "./edit-modal"
+import TaskItem from "./task-item"
 
 interface Todo {
   id: number
@@ -23,19 +23,19 @@ interface TodosByStatus {
 interface ColumnProps {
   title: string
   status: keyof TodosByStatus
+  tasks: Task[];
 }
 
-export function Column({ title, status }: ColumnProps) {
+export function Column(props: ColumnProps) {
+  const { title, status, tasks } = props;
   const { focusedArea, currentModal } = useAppState();
-  const tasks = useTasks();
   const focused = focusedArea === status;
-  const columnTasks = tasks[status];
   const [currentTask, setCurrentTask] = useState<null | Task>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (status === focusedArea) {
-      const firstTask = columnTasks[0];
+      const firstTask = tasks[0];
       if (firstTask) setCurrentTask(firstTask);
     }
     else setCurrentTask(null);
@@ -46,16 +46,16 @@ export function Column({ title, status }: ColumnProps) {
     if (!focused) return
 
     if (currentTask) {
-      const currentIndex = columnTasks.findIndex(todo => todo.id === currentTask.id);
+      const currentIndex = tasks.findIndex(todo => todo.id === currentTask.id);
 
       if (key.name === "j") {
-        const nextTodo = columnTasks.at(currentIndex + 1);
+        const nextTodo = tasks.at(currentIndex + 1);
         if (nextTodo) setCurrentTask(nextTodo);
       }
 
       if (key.name === "k") {
         if (currentIndex === 0) return;
-        const prevTodo = columnTasks.at(currentIndex - 1);
+        const prevTodo = tasks.at(currentIndex - 1);
         if (prevTodo) setCurrentTask(prevTodo);
       }
 
@@ -79,13 +79,8 @@ export function Column({ title, status }: ColumnProps) {
   return (
     <>
       <scrollbox title={title} border flexGrow={1} borderColor={borderColor}>
-        {tasks[status].map(todo => (
-          <text
-            key={todo.id}
-            fg={currentTask?.id === todo.id ? theme.light_blue : undefined}
-          >
-            {currentTask?.id === todo.id ? "▶ " : "• "}{todo.title}
-          </text>
+        {tasks.map(task => (
+          <TaskItem key={task.id} isActive={currentTask?.id === task.id} task={task} />
         ))}
       </scrollbox>
 

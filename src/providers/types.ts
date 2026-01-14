@@ -3,6 +3,9 @@ export type Status = 'todo' | 'doing' | 'done' | 'wont-do';
 export type Task = {
   id: number,
   title: string;
+  status: number;
+  collection_id: number;
+  description?: string;
 }
 
 export type Tasks = Record<Status, Task[]>;
