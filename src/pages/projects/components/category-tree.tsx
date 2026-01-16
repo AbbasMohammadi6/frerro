@@ -124,7 +124,6 @@ export function CategoryTree(props: Props) {
               <box key={id}>
                 <text fg={isSelected ? theme.light_gray : theme.gray}>
                   {isFocused ? '▼ ' : isSelected ? "▶ " : "• "}
-                  <span fg={isSelected ? theme.hint_blue : theme.light_gray}>Category:</span>
                   {' '}{title}
                 </text>
                 {isFocused && (projects.length ?
