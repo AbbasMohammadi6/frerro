@@ -146,38 +146,49 @@ export function CategoryTree(props: Props) {
         </box>
       </box>
 
-      {currentModal === 'moveCategory' && currentProject &&
-        <MoveProject currentProjectId={currentProject.value as number /* TODO: find a better way to do this */} />
-      }
+      {currentProject && (
+        <>
+          {currentModal === 'moveCategory' &&
+            <MoveProject currentProjectId={currentProject.value as number /* TODO: find a better way to do this */} />
+          }
 
-      {currentModal === 'editProject' && currentProject &&
-        <UpsertItemModal
-          close={closeModal}
-          entityName="project"
-          onSubmit={submitEditProject}
-          initialValue={currentProject.label}
-        />}
-      {currentModal === 'removeProject' && currentProject &&
-        <RemoveItemModal
-          entityName={currentProject.label}
-          close={closeModal}
-          submitRemove={submitRemoveProject}
-        />}
+          {currentModal === 'editProject' &&
+            <UpsertItemModal
+              close={closeModal}
+              entityName="project"
+              onSubmit={submitEditProject}
+              initialValue={currentProject.label}
+            />}
+
+          {currentModal === 'removeProject' &&
+            <RemoveItemModal
+              entityName={currentProject.label}
+              close={closeModal}
+              submitRemove={submitRemoveProject}
+            />}
+        </>
+      )}
 
 
-      {currentModal === 'editCategory' && currentCategory &&
-        <UpsertItemModal
-          close={closeModal}
-          entityName="category"
-          onSubmit={submitEditCategory}
-          initialValue={currentCategory.title}
-        />}
-      {currentModal === 'removeProject' && currentCategory &&
-        <RemoveItemModal
-          entityName={currentCategory?.title}
-          close={closeModal}
-          submitRemove={submitRemoveCategory}
-        />}
+      {currentCategory && (
+        <>
+          {currentModal === 'editCategory' &&
+            <UpsertItemModal
+              close={closeModal}
+              entityName="category"
+              onSubmit={submitEditCategory}
+              initialValue={currentCategory.title}
+            />}
+
+          {currentModal === 'removeProject' &&
+            <RemoveItemModal
+              entityName={currentCategory.title}
+              close={closeModal}
+              submitRemove={submitRemoveCategory}
+            />}
+        </>
+      )}
+
     </>
   );
 }
