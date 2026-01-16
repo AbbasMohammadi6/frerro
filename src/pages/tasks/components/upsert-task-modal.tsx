@@ -1,40 +1,31 @@
 import { useState } from 'react';
 import { useKeyboard } from '@opentui/react';
-import { useAppDispatch, useAppState } from '../provider/tasks-page';
-import { useInvalidateTasks } from '../provider/tasks';
-import { db } from '@/utils/db';
 import { Modal } from '@/components';
 import { theme } from '@/theme';
 
+export type Task = { title: string, description?: string };
+
 type Props = {
-  projectId: number;
+  close: () => void;
+  currentTask?: Task;
+  submitTask: ({ title, description }: Task) => void;
 }
 
-export function EnterModal(props: Props) {
-  const { projectId } = props;
-  const { currentModal } = useAppState();
-  const dispatch = useAppDispatch();
-  const invalidateTasks = useInvalidateTasks();
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [focused, setFocused] = useState<'title' | 'description'>("title")
+export function UpsertTaskModal(props: Props) {
+  const { close, submitTask, currentTask } = props;
+  const [title, setTitle] = useState(currentTask?.title ?? "");
+  const [description, setDescription] = useState(currentTask?.description ?? "");
+  const [focused, setFocused] = useState<'title' | 'description'>("title");
 
   useKeyboard((key) => {
-    if (currentModal !== 'newTask') return;
-
-    if (key.name === "escape") dispatch({ type: 'ADD_MODAL', payload: null });
-
+    if (key.name === "escape") close();
     if (key.name === 'tab') setFocused(prev => prev === 'title' ? 'description' : 'title');
-
     if (key.name === 'return') {
-      db.run(
-        'INSERT INTO TASKS (title, status, description, project_id) VALUES (?, 1, ?, ?)',
-        [title, description, projectId]
-      );
+      if (!title) return;
+      submitTask({ title, description });
       setTitle("");
       setDescription("");
       setFocused('title');
-      invalidateTasks();
     }
   });
 
@@ -45,7 +36,7 @@ export function EnterModal(props: Props) {
         width='100%'
         height={'auto'}
         borderColor={theme.cyan}
-        title='Enter your new task...'
+        title={`${currentTask ? 'Edit your task...' : 'Enter your new task...'}`}
       >
         <box borderColor={theme.gray}>
           <input

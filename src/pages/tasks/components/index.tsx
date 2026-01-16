@@ -1,11 +1,12 @@
 import { theme } from "@/theme";
 import { useKeyboard } from "@opentui/react"
 import { useChangeRoute } from "@/providers/routes";
-import { useTasks } from "../provider/tasks";
+import { useInvalidateTasks, useTasks } from "../provider/tasks";
 import { Column } from "./column";
-import { EnterModal } from "./enter-modal";
 import { useAppDispatch, useAppState } from "../provider/tasks-page";
 import type { Status } from "../provider/tasks/types";
+import { UpsertTaskModal, type Task } from "./upsert-task-modal";
+import { db } from "@/utils/db";
 
 const columns: Array<{ title: string, status: Status }> = [
   { title: "Todo (1)", status: "todo" },
@@ -19,11 +20,12 @@ type Props = {
 }
 
 export function Tasks(props: Props) {
-  const { projectId } = props; 
+  const { projectId } = props;
   const dispatch = useAppDispatch();
   const { currentModal } = useAppState();
   const tasks = useTasks();
   const changeRoute = useChangeRoute();
+  const invalidateTasks = useInvalidateTasks();
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -38,6 +40,16 @@ export function Tasks(props: Props) {
     if (key.name === 'b') changeRoute({ name: 'projects' });
   });
 
+  const submitNewTask = ({ title, description }: Task) => {
+      db.run(
+        'INSERT INTO TASKS (title, status, description, project_id) VALUES (?, 1, ?, ?)',
+        [title, description, projectId]
+      );
+      invalidateTasks();
+  }
+
+  const closeModal = () => dispatch({ type: 'ADD_MODAL', payload: null });
+
   return (
     <box backgroundColor={currentModal ? theme.popup_back : theme.bg}>
 
@@ -47,7 +59,11 @@ export function Tasks(props: Props) {
         ))}
       </box>
 
-      {currentModal === 'newTask' && <EnterModal projectId={projectId} />}
+      {currentModal === 'newTask' &&
+        <UpsertTaskModal
+          close={closeModal}
+          submitTask={submitNewTask}
+        />}
     </box>
   )
 }
