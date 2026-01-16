@@ -1,21 +1,14 @@
+import { db, reverseStatus } from '@/utils/db';
 import { createContext, use, useState, type ReactNode } from 'react';
-import type { Status } from '../types';
-import { db, reverseStatus } from '../../utils/db';
+import type { Status, Task } from './types';
 
-type Task = {
-  id: number,
-  title: string;
-  status: number;
-}
+type Tasks = Record<Status, Task[]>;
 
-type Tasks = Record<Status, Omit<Task, 'status'>[]>;
-
-function getTasks(collectionId: number) {
-  const tasks = db.query<Task, any>('SELECT * FROM tasks WHERE collection_id = ?').all(collectionId);
+function getTasks(projectId: number) {
+  const tasks = db.query<Task, any>('SELECT * FROM tasks WHERE project_id = ?').all(projectId);
   return tasks.reduce((acc, item) => {
-    const { status, ...rest } = item;
     const statusStr = reverseStatus[item.status];
-    if (statusStr) acc[statusStr].push(rest);
+    if (statusStr) acc[statusStr].push(item);
     return acc;
   }, { todo: [], doing: [], done: [], 'wont-do': [] } as Tasks);
 }
@@ -25,15 +18,15 @@ const tasksContext = createContext<Tasks | undefined>(undefined);
 
 type Props = {
   children: ReactNode;
-  collectionId: number
+  projectId: number
 }
 
 export function TasksProvider(props: Props) {
-  const { children, collectionId } = props;
-  const [tasks, setTasks] = useState<Tasks>(() => getTasks(collectionId) /* move this to useEffect */);
+  const { children, projectId } = props;
+  const [tasks, setTasks] = useState<Tasks>(() => getTasks(projectId) /* move this to useEffect */);
 
   const invalidate = () => {
-    const updatedTasks = getTasks(collectionId);
+    const updatedTasks = getTasks(projectId);
     setTasks(updatedTasks);
   }
 
@@ -52,7 +45,7 @@ export function useTasks() {
   return tasks;
 }
 
-export function useInvalidate() {
+export function useInvalidateTasks() {
   const invalidate = use(invalidateTasksContext);
   if (invalidate === undefined) throw new Error('useTasks must be used within the TasksProvider');
   return invalidate;

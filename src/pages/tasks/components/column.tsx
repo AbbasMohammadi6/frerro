@@ -1,12 +1,14 @@
 import { useKeyboard } from "@opentui/react"
 import { useEffect, useState } from "react"
-import type { Task } from "../providers/types"
-import { useAppState, useAppDispatch } from "../providers"
-import { theme } from "../theme/theme"
+import { useAppDispatch, useAppState } from "../provider/tasks-page"
+import { theme } from "@/theme"
+import { TaskItem } from "./task-item"
 import { MoveModal } from "./move-modal"
-import RemoveModal from "./remove-modal"
 import { EditModal } from "./edit-modal"
-import TaskItem from "./task-item"
+import type { Task } from "../provider/tasks/types"
+import { RemoveItemModal } from "@/components/remove-item-modal"
+import { db } from "@/utils/db"
+import { useInvalidateTasks } from "../provider/tasks"
 
 interface Todo {
   id: number
@@ -32,6 +34,7 @@ export function Column(props: ColumnProps) {
   const focused = focusedArea === status;
   const [currentTask, setCurrentTask] = useState<null | Task>(null);
   const dispatch = useAppDispatch();
+  const invalidateTasks = useInvalidateTasks();
 
   useEffect(() => {
     if (status === focusedArea) {
@@ -40,6 +43,8 @@ export function Column(props: ColumnProps) {
     }
     else setCurrentTask(null);
   }, [status, focusedArea]);
+
+  const closeModal = () => dispatch({ type: 'ADD_MODAL', payload: null });
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -73,6 +78,13 @@ export function Column(props: ColumnProps) {
     }
   })
 
+  const submitRemove = () => {
+    if (!currentTask) return;
+    db.run('DELETE FROM tasks WHERE id IS ?', [currentTask.id]);
+    setCurrentTask(null)
+    invalidateTasks();
+    closeModal();
+  }
 
   const borderColor = focused ? theme.info_yellow : undefined;
 
@@ -84,17 +96,18 @@ export function Column(props: ColumnProps) {
         ))}
       </scrollbox>
 
-      {currentModal === 'removeTask' && currentTask && (
-        <RemoveModal currentTask={currentTask} removeCurrentTask={() => setCurrentTask(null)} />
-      )}
+      {currentModal === 'removeTask' && currentTask &&
+        <RemoveItemModal
+          close={closeModal}
+          submitRemove={submitRemove}
+          entityName={currentTask.title}
+        />}
 
-      {currentModal === 'moveTask' && currentTask && (
-        <MoveModal currentTask={currentTask} status={status} />
-      )}
+      {currentModal === 'moveTask' && currentTask &&
+        <MoveModal currentTask={currentTask} status={status} />}
 
-      {currentModal === 'editTask' && currentTask && (
-        <EditModal currentTask={currentTask} />
-      )}
+      {currentModal === 'editTask' && currentTask &&
+        <EditModal currentTask={currentTask} />}
     </>
   )
 }

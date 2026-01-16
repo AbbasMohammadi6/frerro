@@ -1,15 +1,14 @@
+import type { Status } from '@/pages/tasks/provider/tasks/types';
 import { Database } from 'bun:sqlite';
-import type { Status } from '../providers/types';
 
 export const rootCategoryName = 'root';
 
 function createDb() {
   const db = new Database("mydb.sqlite");
-  // db.run("CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, status INTEGER)");
   db.run("CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT)");
 
   db.run(`CREATE TABLE IF NOT EXISTS 
-    collections (
+    projects (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT,
       category_id INTEGER,
@@ -19,11 +18,11 @@ function createDb() {
   db.run(`CREATE TABLE IF NOT EXISTS 
     tasks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT not null,
+      title TEXT NOT NULL,
       description TEXT,
-      status INTEGER not null,
-      collection_id INTEGER not null,
-      FOREIGN KEY (collection_id) REFERENCES collection(id)
+      status INTEGER NOT NULL,
+      project_id INTEGER NOT NULL,
+      FOREIGN KEY (project_id) REFERENCES projects(id)
   )`);
 
   const currentCategories = db.query('SELECT * FROM categories').all();

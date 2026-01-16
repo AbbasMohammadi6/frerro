@@ -1,25 +1,25 @@
 Tree Structure:
-* We should have "collections", where the user could store the todos for a certain subject
-* each "collection" must be under a "category", the user is not required to create a category, the default category is called "root" that means the "collection" is in the no root with no category
-* Should be able to move collections to a different category
+* We should have "projects", where the user could store the todos for a certain subject
+* each "project" must be under a "category", the user is not required to create a category, the default category is called "root" that means the "project" is in the no root with no category
+* Should be able to move projects to a different category
 
 Screens:
-1. no-collection
-  ui: there is no collection, create one?, an input for creating a collection
-  once the collection is created move to the tasks view of that collection
-2. collections
-  * there are collections and categories, there is an input where the user could search for collections
-  * there is a tree structure under the input where the user could find the collection manually
-  * crud for collection
+1. no-project
+  ui: there is no project, create one?, an input for creating a project
+  once the project is created move to the tasks view of that project
+2. projects
+  * there are projects and categories, there is an input where the user could search for projects
+  * there is a tree structure under the input where the user could find the project manually
+  * crud for project
   * crud for category
-  * move collection between categories
+  * move project between categories
 3. tasks
   * there is four columns, "todo", "doing", "done" and "wont-do"
   * do basic crud for tasks
 
 Data Structures:
-Task: title, description, id, collection_id
-  id is the primary key, the title in each collection must be unique
-Collection: title, id, category_id
+Task: title, description, id, project_id
+  id is the primary key, the title in each project must be unique
+project: title, id, category_id
   id is the primary key, title should be unique
 Category: title, id

@@ -1,10 +1,11 @@
+import { theme } from "@/theme";
 import { useKeyboard } from "@opentui/react"
-import { Column } from "./column"
-import EnterModal from "./enter-modal";
-import { useAppDispatch, useAppState } from "../providers";
-import type { Status } from "../providers/types";
-import { theme } from "../theme/theme";
-import { useTasks } from "../providers/tasks";
+import { useChangeRoute } from "@/providers/routes";
+import { useTasks } from "../provider/tasks";
+import { Column } from "./column";
+import { EnterModal } from "./enter-modal";
+import { useAppDispatch, useAppState } from "../provider/tasks-page";
+import type { Status } from "../provider/tasks/types";
 
 const columns: Array<{ title: string, status: Status }> = [
   { title: "Todo (1)", status: "todo" },
@@ -14,14 +15,15 @@ const columns: Array<{ title: string, status: Status }> = [
 ];
 
 type Props = {
-  id: number;
+  projectId: number;
 }
 
 export function Tasks(props: Props) {
-  const { id: collectionId } = props; 
+  const { projectId } = props; 
   const dispatch = useAppDispatch();
   const { currentModal } = useAppState();
   const tasks = useTasks();
+  const changeRoute = useChangeRoute();
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -31,9 +33,9 @@ export function Tasks(props: Props) {
       if (currentColumn) dispatch({ type: 'FOCUS_AREA', payload: currentColumn.status });
     }
 
-    if (key.name === 'n') {
-      dispatch({ type: 'ADD_MODAL', payload: 'newTask' });
-    }
+    if (key.name === 'n') dispatch({ type: 'ADD_MODAL', payload: 'newTask' });
+
+    if (key.name === 'b') changeRoute({ name: 'projects' });
   });
 
   return (
@@ -45,7 +47,7 @@ export function Tasks(props: Props) {
         ))}
       </box>
 
-      {currentModal === 'newTask' && <EnterModal collectionId={collectionId} />}
+      {currentModal === 'newTask' && <EnterModal projectId={projectId} />}
     </box>
   )
 }

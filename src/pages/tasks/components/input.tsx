@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useKeyboard } from '@opentui/react';
-import { useAppDispatch, useAppState } from '../providers';
-import { theme } from '../theme/theme';
-import { db } from '../utils/db';
-import { useInvalidate } from '../providers/tasks';
+import { useAppDispatch, useAppState } from '../provider/tasks-page';
+import { useInvalidateTasks } from '../provider/tasks';
+import { db } from '@/utils/db';
+import { theme } from '@/theme';
 
-export default function Input() {
+export function Input() {
   const [todo, setTodo] = useState("")
   const { currentModal } = useAppState();
   const dispatch = useAppDispatch();
-  const invalidateTasks = useInvalidate();
+  const invalidateTasks = useInvalidateTasks();
 
   useKeyboard((key) => {
     if (key.name === "escape" && currentModal === 'newTask') dispatch({ type: 'ADD_MODAL', payload: null });

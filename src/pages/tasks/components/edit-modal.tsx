@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { Task } from "../providers/types"
-import { theme } from "../theme/theme";
-import { Modal } from "./modal";
 import { useKeyboard } from "@opentui/react";
-import { useAppDispatch, useAppState } from "../providers";
-import { useInvalidate } from "../providers/tasks";
-import { db } from "../utils/db";
+import type { Task } from "../provider/tasks/types";
+import { useAppDispatch, useAppState } from "../provider/tasks-page";
+import { useInvalidateTasks } from "../provider/tasks";
+import { db } from "@/utils/db";
+import { Modal } from "@/components";
+import { theme } from "@/theme";
 
 type Props = {
   currentTask: Task;
@@ -18,7 +18,7 @@ export function EditModal(props: Props) {
   const [title, setTitle] = useState(currentTask.title);
   const [description, setDescription] = useState(currentTask.description ?? '')
   const [focused, setFocused] = useState<'title' | 'description'>("title")
-  const invalidateTasks = useInvalidate();
+  const invalidateTasks = useInvalidateTasks();
 
   useKeyboard((key) => {
     if (currentModal !== 'editTask') return;

@@ -3,9 +3,9 @@ import { createContext, use, useState, type ReactNode } from 'react';
 export type Route = {
   name: 'loading',
 } | {
-  name: 'no-collection'
+  name: 'no-project'
 } | {
-  name: 'collections',
+  name: 'projects',
 } | {
   name: 'tasks',
   id: number,

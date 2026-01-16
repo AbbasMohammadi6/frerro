@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { useKeyboard } from '@opentui/react';
-import { useAppDispatch, useAppState } from '../providers';
-import { theme } from '../theme/theme';
-import { db } from '../utils/db';
-import { useInvalidate } from '../providers/tasks';
-import { Modal } from './modal';
+import { useAppDispatch, useAppState } from '../provider/tasks-page';
+import { useInvalidateTasks } from '../provider/tasks';
+import { db } from '@/utils/db';
+import { Modal } from '@/components';
+import { theme } from '@/theme';
 
 type Props = {
-  collectionId: number;
+  projectId: number;
 }
 
-export default function EnterModal(props: Props) {
-  const { collectionId } = props;
+export function EnterModal(props: Props) {
+  const { projectId } = props;
   const { currentModal } = useAppState();
   const dispatch = useAppDispatch();
-  const invalidateTasks = useInvalidate();
+  const invalidateTasks = useInvalidateTasks();
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [focused, setFocused] = useState<'title' | 'description'>("title")
@@ -28,8 +28,8 @@ export default function EnterModal(props: Props) {
 
     if (key.name === 'return') {
       db.run(
-        'INSERT INTO TASKS (title, status, description, collection_id) VALUES (?, 1, ?, ?)',
-        [title, description, collectionId]
+        'INSERT INTO TASKS (title, status, description, project_id) VALUES (?, 1, ?, ?)',
+        [title, description, projectId]
       );
       setTitle("");
       setDescription("");

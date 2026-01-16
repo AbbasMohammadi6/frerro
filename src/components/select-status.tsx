@@ -1,56 +1,58 @@
 import { useKeyboard } from "@opentui/react";
-import { useState } from "react";
-import { useAppDispatch } from "../providers";
-import { theme } from "../theme/theme";
+import { theme } from "../theme";
 
-type Option = { label: string, value: string | number };
+export type Option = { label: string, value: string | number };
 
 type Props = {
+  focused: boolean;
   options: Option[],
-  onSelect: (o: Option | null) => void;
+  onSelect: (o: Option) => void;
+  currentModal: unknown;
+  value: Option | null;
+  onChange: (option: Option) => void;
 };
 
-export default function Select(props: Props) {
-  const { options, onSelect } = props;
-  const [selected, setSelected] = useState<Option | null>(null);
-  const dispatch = useAppDispatch();
+export function SelectStatus(props: Props) {
+  const { value, onChange, options, onSelect, focused/* , currentModal */ } = props;
 
   useKeyboard((key) => {
-    if (key.name === 'return') {
-      onSelect(selected);
-      dispatch({ type: 'ADD_MODAL', payload: null });
+    if (focused === false) return;
+
+    if (key.name === 'return' && value) {
+      onSelect(value);
     }
 
     if (key.name === 'j') {
       if (options[0] === undefined) return;
-      if (selected === null) setSelected(options[0]);
+      if (value === null) onChange(options[0]);
       else {
-        const currentIdx = options.findIndex(o => o.value === selected.value);
+        const currentIdx = options.findIndex(o => o.value === value.value);
         const nextOption = options[currentIdx + 1];
         if (currentIdx !== -1 && nextOption !== undefined) {
-          setSelected(nextOption);
+          onChange(nextOption);
         }
       }
     }
 
     if (key.name === 'k') {
       if (options[0] === undefined) return;
-      if (selected === null) return;
-      const currentIdx = options.findIndex(o => o.value === selected.value);
+      if (value === null) return;
+      const currentIdx = options.findIndex(o => o.value === value.value);
       const prevOption = options[currentIdx - 1];
       if (currentIdx !== -1 && prevOption !== undefined) {
-        setSelected(prevOption);
+        onChange(prevOption);
       }
     }
   });
 
   return (
     <box>
-      {options.map(({ label, value }) => {
-        const isSelected = selected?.value === value;
+      {options.map((option) => {
+        // TODO: think of something for this value.value
+        const isSelected = value?.value === option.value;
         return (
-        <text key={value} fg={isSelected ? theme.green : theme.gray}>
-          {isSelected ? "▶ " : "• "}{label}
+        <text key={option.value} fg={isSelected ? theme.green : theme.gray}>
+          {isSelected ? "▶ " : "• "}{option.label}
         </text>
       )
       })}
