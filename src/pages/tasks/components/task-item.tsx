@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Task } from "../provider/tasks/types";
 import { useAppState } from "../provider/tasks-page";
 import { theme } from "@/theme";
@@ -16,17 +16,23 @@ export function TaskItem(props: Props) {
 
   useKeyboard((key) => {
     if (currentModal) return;
-    if (key.name === 'return' && isActive && description) setIsOpen(prev => !prev);
+    if (key.name === 'return' && isActive) setIsOpen(prev => !prev);
   });
+
+  useEffect(() => {
+    if (!isActive) setIsOpen(false);
+  }, [isActive]);
 
   return (
     <box>
-      <text
-        fg={isActive ? theme.light_blue : undefined}
-      >
+      <text fg={isActive ? theme.light_blue : undefined}>
         {isOpen ? '▼ ' : isActive ? "▶ " : "• "}{title}
       </text>
-      {isOpen && <text paddingBottom={1} fg={theme.gray}>{description}</text>}
+      {isOpen && (
+        description?.length
+          ? <text paddingBottom={1} marginLeft={1} fg={theme.gray}>{description}</text>
+          : <text fg={theme.gray} marginLeft={2}>---</text>
+      )}
     </box>
   );
 }

@@ -149,8 +149,7 @@ export function CategoryTree(props: Props) {
       {currentProject && (
         <>
           {currentModal === 'moveCategory' &&
-            <MoveProject currentProjectId={currentProject.value as number /* TODO: find a better way to do this */} />
-          }
+            <MoveProject currentProjectId={currentProject.value as number /* TODO: find a better way to do this */} />}
 
           {currentModal === 'editProject' &&
             <UpsertItemModal
