@@ -1,15 +1,13 @@
 import { useKeyboard } from "@opentui/react"
 import { useEffect, useState } from "react"
-import { useAppDispatch, useAppState } from "../provider/tasks-page"
 import { theme } from "@/theme"
 import { TaskItem } from "./task-item"
 import { MoveModal } from "./move-task"
-import type { Status, Task } from "../provider/tasks/types"
 import { RemoveItemModal } from "@/components/remove-item-modal"
-import { db } from "@/utils/db"
-import { useInvalidateTasks } from "../provider/tasks"
+import { db } from "@/utils"
 import { UpsertTaskModal, type Task as SubmmittedTask } from "./upsert-task"
-import { useChangeModal } from "../provider/tasks-page/actions"
+import type { Status, Task } from "../types"
+import { useAppState, useChangeModal, useInvalidateTasks } from "../hooks"
 
 interface ColumnProps {
   title: string;
@@ -22,7 +20,6 @@ export function Column(props: ColumnProps) {
   const { focusedArea, currentModal } = useAppState();
   const focused = focusedArea === status;
   const [currentTask, setCurrentTask] = useState<null | Task>(null);
-  const dispatch = useAppDispatch();
   const invalidateTasks = useInvalidateTasks();
   const changeModal = useChangeModal();
 
@@ -86,9 +83,7 @@ export function Column(props: ColumnProps) {
   return (
     <>
       <scrollbox border title={title} flexGrow={1} borderColor={borderColor}>
-        {tasks.map(task => (
-          <TaskItem key={task.id} isActive={currentTask?.id === task.id} task={task} />
-        ))}
+        {tasks.map(task => <TaskItem key={task.id} isActive={currentTask?.id === task.id} task={task} />)}
       </scrollbox>
 
       {currentTask && (

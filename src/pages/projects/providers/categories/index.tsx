@@ -1,6 +1,6 @@
-import { createContext, use, useState, type ReactNode } from 'react';
-import type { Category, NormalizedCategory } from './types';
-import { db } from '@/utils/db';
+import { createContext, useState, type ReactNode } from 'react';
+import { db } from '@/utils';
+import type { Category, NormalizedCategory } from '../../types';
 
 function getCateories(): NormalizedCategory[] {
   const dbCategories = db.query<Category, []>(
@@ -26,8 +26,8 @@ function getCateories(): NormalizedCategory[] {
   return Object.values(categories);
 }
 
-const invalidateCategoriesContext = createContext<(() => void) | undefined>(undefined);
-const categoriesContext = createContext<NormalizedCategory[] | undefined>(undefined);
+export const invalidateCategoriesContext = createContext<(() => void) | undefined>(undefined);
+export const categoriesContext = createContext<NormalizedCategory[] | undefined>(undefined);
 
 type Props = {
   children: ReactNode;
@@ -49,16 +49,4 @@ export function CategoiesProvider(props: Props) {
       </categoriesContext.Provider>
     </invalidateCategoriesContext.Provider>
   );
-}
-
-export function useCategories() {
-  const tasks = use(categoriesContext);
-  if (tasks === undefined) throw new Error('useCategories must be used within the CategoriesProvider');
-  return tasks;
-}
-
-export function useInvalidateCategories() {
-  const invalidate = use(invalidateCategoriesContext);
-  if (invalidate === undefined) throw new Error('useInvalidateCategories must be used within the CategoriesProvider');
-  return invalidate;
 }

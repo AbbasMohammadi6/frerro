@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { Task } from "../provider/tasks/types";
-import { useAppState } from "../provider/tasks-page";
 import { theme } from "@/theme";
 import { useKeyboard } from '@opentui/react';
+import type { Task } from "../types";
+import { useAppState } from "../hooks";
 
 type Props = {
   isActive: boolean;

@@ -1,6 +1,7 @@
-import { db, reverseStatus } from '@/utils/db';
-import { createContext, use, useState, type ReactNode } from 'react';
-import type { Status, Task } from './types';
+import { db } from '@/utils/db';
+import { createContext, useState, type ReactNode } from 'react';
+import type { Status, Task } from '../../types';
+import { reverseStatus } from '../../utils';
 
 type Tasks = Record<Status, Task[]>;
 
@@ -13,8 +14,8 @@ function getTasks(projectId: number) {
   }, { todo: [], doing: [], done: [], 'wont-do': [] } as Tasks);
 }
 
-const invalidateTasksContext = createContext<(() => void) | undefined>(undefined);
-const tasksContext = createContext<Tasks | undefined>(undefined);
+export const invalidateTasksContext = createContext<(() => void) | undefined>(undefined);
+export const tasksContext = createContext<Tasks | undefined>(undefined);
 
 type Props = {
   children: ReactNode;
@@ -37,16 +38,4 @@ export function TasksProvider(props: Props) {
       </tasksContext.Provider>
     </invalidateTasksContext.Provider>
   );
-}
-
-export function useTasks() {
-  const tasks = use(tasksContext);
-  if (tasks === undefined) throw new Error('useTasks must be used within the TasksProvider');
-  return tasks;
-}
-
-export function useInvalidateTasks() {
-  const invalidate = use(invalidateTasksContext);
-  if (invalidate === undefined) throw new Error('useTasks must be used within the TasksProvider');
-  return invalidate;
 }

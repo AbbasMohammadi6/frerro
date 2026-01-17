@@ -1,12 +1,10 @@
 import { useKeyboard } from "@opentui/react";
-import { useCategories, useInvalidateCategories } from "../providers/categories";
-import { useAppState } from "../providers/project-page/project-page";
 import { theme } from "@/theme";
 import { CategoryTree } from "./category-tree";
-import { db } from "@/utils/db";
+import { db } from "@/utils";
 import { UpsertCategoryModal } from "./upsert-category";
 import UpsertProejct from "./upsert-project";
-import { useChangeModal } from "../providers/project-page/actions";
+import { useAppState, useCategories, useChangeModal, useInvalidateCategories } from "../hooks";
 
 export function Projects() {
   const { currentModal } = useAppState();

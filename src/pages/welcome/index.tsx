@@ -1,15 +1,14 @@
 import { useChangeRoute } from "@/providers/routes";
 import { theme } from "@/theme";
-import { db, rootCategoryName } from "@/utils/db";
-import { logToFile } from "@/utils/logger";
+import { db, rootCategoryName, logToFile } from "@/utils";
 
-export default function Wellcome() {
+export default function Welcome() {
   const changeRoute = useChangeRoute();
 
   const onSubmit = (value: string) => {
     if (!value) return;
     try {
-      const rootCategory = db.query<{ id: number }, any>(`SELECT id FROM categories WHERE title = ?`).get(rootCategoryName);
+      const rootCategory = db.query<{ id: number }, string>(`SELECT id FROM categories WHERE title = ?`).get(rootCategoryName);
       if (rootCategory) {
         db.run('INSERT INTO projects (title, category_id) VALUES (?, ?)', [value, rootCategory.id]);
       }

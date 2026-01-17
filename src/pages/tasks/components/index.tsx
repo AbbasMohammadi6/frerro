@@ -1,14 +1,12 @@
 import { theme } from "@/theme";
 import { useKeyboard } from "@opentui/react"
 import { useChangeRoute } from "@/providers/routes";
-import { useInvalidateTasks, useTasks } from "../provider/tasks";
 import { Column } from "./column";
-import { useAppState } from "../provider/tasks-page";
-import type { Status } from "../provider/tasks/types";
 import { UpsertTaskModal, type Task } from "./upsert-task";
-import { db } from "@/utils/db";
-import { useChangeModal, useUpdateFocusArea } from "../provider/tasks-page/actions";
+import { db } from "@/utils";
 import { useMemo } from "react";
+import type { Status } from "../types";
+import { useAppState, useChangeModal, useInvalidateTasks, useTasks, useUpdateFocusArea } from "../hooks";
 
 const columns: Array<{ title: string, status: Status }> = [
   { title: "Todo (1)", status: "todo" },

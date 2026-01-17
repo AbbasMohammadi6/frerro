@@ -1,10 +1,10 @@
 import { Modal, SelectStatus, type Option } from "@/components";
 import { theme } from "@/theme";
-import { db } from "@/utils/db";
+import { db } from "@/utils";
 import { useEffect, useMemo, useState } from "react";
-import type { DbCategory } from "../providers/categories/types";
 import { useKeyboard } from "@opentui/react";
-import { useInvalidateCategories } from "../providers/categories";
+import { useInvalidateCategories } from "../hooks";
+import type { DbCategory } from "../types";
 
 type Props = {
   initialProject?: { title: string, categoryId: number, projectId: number };

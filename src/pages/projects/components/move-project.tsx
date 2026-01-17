@@ -1,12 +1,10 @@
 import { useMemo, useState } from "react";
 import { Modal, type Option } from "@/components";
 import { SelectStatus } from '@/components/select-status';
-import { db } from "@/utils/db";
+import { db } from "@/utils";
 import { theme } from "@/theme";
-import type { DbCategory, DbProject } from "../providers/categories/types";
-import { useAppState } from "../providers/project-page/project-page";
-import { useInvalidateCategories } from "../providers/categories";
-import { useChangeModal } from "../providers/project-page/actions";
+import type { DbCategory, DbProject } from "../types";
+import { useAppState, useChangeModal, useInvalidateCategories } from "../hooks";
 
 type Props = {
   currentProjectId: number;

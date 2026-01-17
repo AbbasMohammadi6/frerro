@@ -1,6 +1,6 @@
 import { Tasks } from './components';
 import { TasksProvider } from './provider/tasks';
-import { UiProvider } from './provider/tasks-page';
+import { AppProvider } from './provider/app';
 
 type Props = {
   projectId: number;
@@ -10,9 +10,9 @@ export default function Page(props: Props) {
   const { projectId } = props;
   return (
     <TasksProvider projectId={projectId}>
-      <UiProvider>
+      <AppProvider>
         <Tasks projectId={projectId} />
-      </UiProvider>
+      </AppProvider>
     </TasksProvider>
   );
 }

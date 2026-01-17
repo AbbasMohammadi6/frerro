@@ -1,4 +1,4 @@
-import { db } from "@/utils/db";
+import { db } from "@/utils";
 import { useMemo } from "react";
 import { useChangeRoute } from "@/providers/routes";
 

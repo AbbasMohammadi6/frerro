@@ -3,15 +3,13 @@ import { theme } from "@/theme";
 import { useKeyboard } from "@opentui/react";
 import { useChangeRoute } from "@/providers/routes";
 import { SelectStatus, type Option } from "@/components";
-import type { NormalizedCategory } from "../providers/categories/types";
-import { useAppState } from "../providers/project-page/project-page";
 import { MoveProject } from "./move-project";
 import { UpsertCategoryModal } from "./upsert-category";
-import { db } from "@/utils/db";
-import { useInvalidateCategories } from "../providers/categories";
+import { db } from "@/utils";
 import { RemoveItemModal } from "@/components/remove-item-modal";
 import UpsertProject from "./upsert-project";
-import { useChangeModal } from "../providers/project-page/actions";
+import type { NormalizedCategory } from "../types";
+import { useAppState, useChangeModal, useInvalidateCategories } from "../hooks";
 
 type Props = {
   categories: NormalizedCategory[];
@@ -189,7 +187,6 @@ export function CategoryTree(props: Props) {
             />}
         </>
       )}
-
     </>
   );
 }

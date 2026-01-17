@@ -1,13 +1,12 @@
 import { useState, type ComponentProps } from "react";
 import { useKeyboard } from "@opentui/react"
-import type { Status, Task } from "../provider/tasks/types";
 import { Modal, type Option } from "@/components";
-import { useAppState } from "../provider/tasks-page";
-import { useInvalidateTasks } from "../provider/tasks";
 import { SelectStatus } from '@/components/select-status';
-import { db, status as statusMap } from "@/utils/db";
+import { db, } from "@/utils";
 import { theme } from "@/theme";
-import { useChangeModal } from "../provider/tasks-page/actions";
+import type { Status, Task } from "../types";
+import { useAppState, useChangeModal, useInvalidateTasks } from "../hooks";
+import { status as statusMap } from '../utils';
 
 type Props = {
   currentTask: Task;
