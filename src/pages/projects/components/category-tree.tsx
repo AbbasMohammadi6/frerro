@@ -4,13 +4,14 @@ import { useKeyboard } from "@opentui/react";
 import { useChangeRoute } from "@/providers/routes";
 import { SelectStatus, type Option } from "@/components";
 import type { NormalizedCategory } from "../providers/categories/types";
-import { useProjectUiDispatch, useProjectUiState } from "../providers/project-page/project-page";
+import { useAppState } from "../providers/project-page/project-page";
 import { MoveProject } from "./move-project";
 import { UpsertCategoryModal } from "./upsert-category";
 import { db } from "@/utils/db";
 import { useInvalidateCategories } from "../providers/categories";
 import { RemoveItemModal } from "@/components/remove-item-modal";
-import UpsertProejct from "./upsert-project";
+import UpsertProject from "./upsert-project";
+import { useChangeModal } from "../providers/project-page/actions";
 
 type Props = {
   categories: NormalizedCategory[];
@@ -19,9 +20,9 @@ type Props = {
 export function CategoryTree(props: Props) {
   const { categories } = props;
   const changeRoute = useChangeRoute();
-  const { currentModal } = useProjectUiState();
-  const dispatch = useProjectUiDispatch();
+  const { currentModal } = useAppState();
   const invalidateCategories = useInvalidateCategories();
+  const changeModal = useChangeModal();
   const [currentProject, setCurrentProject] = useState<Option | null>(null);
   const [currentCategory, setCurrentCategory] = useState<NormalizedCategory | null>(categories[0] ?? null);
   const [focusedCategory, setFocusedCategory] = useState<NormalizedCategory | null>(null);
@@ -32,7 +33,7 @@ export function CategoryTree(props: Props) {
     if (typeof value === 'number') changeRoute({ name: 'tasks', id: value });
   }
 
-  const closeModal = () => dispatch({ type: 'CHANGE_MODAL', payload: null });
+  const closeModal = () => changeModal(null);
 
   const submitEditCategory = (value: string) => {
     if (!currentCategory) return;
@@ -55,15 +56,15 @@ export function CategoryTree(props: Props) {
     }
 
     if (key.name === '-') {
-      if (focusedCategory) dispatch({ type: 'CHANGE_MODAL', payload: 'removeProject' });
-      else if (categories.length > 1) dispatch({ type: 'CHANGE_MODAL', payload: 'removeCategory' });
+      if (focusedCategory) changeModal('removeProject');
+      else if (categories.length > 1) changeModal('removeCategory');
 
       invalidateCategories();
     }
 
     if (key.name === 'e') {
-      if (focusedCategory) dispatch({ type: 'CHANGE_MODAL', payload: 'editProject' });
-      else if (categories.length > 1) dispatch({ type: 'CHANGE_MODAL', payload: 'editCategory' });
+      if (focusedCategory) changeModal('editProject');
+      else if (categories.length > 1) changeModal('editCategory');
 
       invalidateCategories();
     }
@@ -165,7 +166,7 @@ export function CategoryTree(props: Props) {
       )}
 
       {currentCategory && currentProject && currentModal === 'editProject' &&
-        <UpsertProejct
+        <UpsertProject
           resetState={() => {
             closeModal();
             setCurrentProject(null);

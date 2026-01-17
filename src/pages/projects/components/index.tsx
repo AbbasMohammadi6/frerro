@@ -1,26 +1,27 @@
 import { useKeyboard } from "@opentui/react";
 import { useCategories, useInvalidateCategories } from "../providers/categories";
-import { useProjectUiDispatch, useProjectUiState } from "../providers/project-page/project-page";
+import { useAppState } from "../providers/project-page/project-page";
 import { theme } from "@/theme";
 import { CategoryTree } from "./category-tree";
 import { db } from "@/utils/db";
 import { UpsertCategoryModal } from "./upsert-category";
 import UpsertProejct from "./upsert-project";
+import { useChangeModal } from "../providers/project-page/actions";
 
 export function Projects() {
-  const { currentModal } = useProjectUiState();
-  const dispatch = useProjectUiDispatch();
+  const { currentModal } = useAppState();
   const categories = useCategories();
   const invalidateCategories = useInvalidateCategories();
+  const changeModal = useChangeModal();
 
   useKeyboard((key) => {
     if (currentModal) return;
-    if (key.name === 'n') dispatch({ type: 'CHANGE_MODAL', payload: 'newProject' });
-    if (key.name === 'n' && key.shift) dispatch({ type: 'CHANGE_MODAL', payload: 'newCategory' });
-    if (key.name === 'm') dispatch({ type: 'CHANGE_MODAL', payload: 'moveProject' });
+    if (key.name === 'n') changeModal('newProject');
+    if (key.name === 'n' && key.shift) changeModal('newCategory');
+    if (key.name === 'm') changeModal('moveProject');
   });
 
-  const closeModal = () => dispatch({ type: 'CHANGE_MODAL', payload: null });
+  const closeModal = () => changeModal(null);
 
   const submitCategory = (value: string) => {
     db.run('INSERT INTO categories (title) VALUES (?)', [value]);

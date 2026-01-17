@@ -24,13 +24,13 @@ export function ProjectUiProvider(props: Props) {
   );
 }
 
-export function useProjectUiState() {
+export function useAppState() {
   const state = use(stateContext);
   if (state === undefined) throw new Error('useProjectUiState must be used with ProjectUiProvider');
   return state;
 }
 
-export function useProjectUiDispatch() {
+export function useAppDispatch() {
   const dispatch = use(dispatchContext);
   if (dispatch === undefined) throw new Error('useProjectUiDispatch must be used with ProjectUiProvider');
   return dispatch;

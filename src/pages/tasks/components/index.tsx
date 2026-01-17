@@ -3,10 +3,11 @@ import { useKeyboard } from "@opentui/react"
 import { useChangeRoute } from "@/providers/routes";
 import { useInvalidateTasks, useTasks } from "../provider/tasks";
 import { Column } from "./column";
-import { useAppDispatch, useAppState } from "../provider/tasks-page";
+import { useAppState } from "../provider/tasks-page";
 import type { Status } from "../provider/tasks/types";
 import { UpsertTaskModal, type Task } from "./upsert-task";
 import { db } from "@/utils/db";
+import { useChangeModal, useUpdateFocusArea } from "../provider/tasks-page/actions";
 
 const columns: Array<{ title: string, status: Status }> = [
   { title: "Todo (1)", status: "todo" },
@@ -21,34 +22,35 @@ type Props = {
 
 export function Tasks(props: Props) {
   const { projectId } = props;
-  const dispatch = useAppDispatch();
   const { currentModal } = useAppState();
   const tasks = useTasks();
   const changeRoute = useChangeRoute();
   const invalidateTasks = useInvalidateTasks();
+  const changeModal = useChangeModal();
+  const updateFocusArea = useUpdateFocusArea();
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
 
     if (!Number.isNaN(Number(key.name))) {
       const currentColumn = columns[+key.name - 1];
-      if (currentColumn) dispatch({ type: 'FOCUS_AREA', payload: currentColumn.status });
+      if (currentColumn) updateFocusArea(currentColumn.status);
     }
 
-    if (key.name === 'n') dispatch({ type: 'ADD_MODAL', payload: 'newTask' });
+    if (key.name === 'n') changeModal('newTask');
 
     if (key.name === 'b') changeRoute({ name: 'projects' });
   });
 
   const submitNewTask = ({ title, description }: Task) => {
-      db.run(
-        'INSERT INTO TASKS (title, status, description, project_id) VALUES (?, 1, ?, ?)',
-        [title, description ?? null, projectId]
-      );
-      invalidateTasks();
+    db.run(
+      'INSERT INTO TASKS (title, status, description, project_id) VALUES (?, 1, ?, ?)',
+      [title, description ?? null, projectId]
+    );
+    invalidateTasks();
   }
 
-  const closeModal = () => dispatch({ type: 'ADD_MODAL', payload: null });
+  const closeModal = () => changeModal(null);
 
   return (
     <box backgroundColor={currentModal ? theme.popup_back : theme.bg}>
@@ -60,10 +62,7 @@ export function Tasks(props: Props) {
       </box>
 
       {currentModal === 'newTask' &&
-        <UpsertTaskModal
-          close={closeModal}
-          submitTask={submitNewTask}
-        />}
+        <UpsertTaskModal close={closeModal} submitTask={submitNewTask} />}
     </box>
   )
 }

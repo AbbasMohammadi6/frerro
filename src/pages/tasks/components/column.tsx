@@ -9,6 +9,7 @@ import { RemoveItemModal } from "@/components/remove-item-modal"
 import { db } from "@/utils/db"
 import { useInvalidateTasks } from "../provider/tasks"
 import { UpsertTaskModal, type Task as SubmmittedTask } from "./upsert-task"
+import { useChangeModal } from "../provider/tasks-page/actions"
 
 interface ColumnProps {
   title: string;
@@ -23,6 +24,7 @@ export function Column(props: ColumnProps) {
   const [currentTask, setCurrentTask] = useState<null | Task>(null);
   const dispatch = useAppDispatch();
   const invalidateTasks = useInvalidateTasks();
+  const changeModal = useChangeModal();
 
   useEffect(() => {
     if (status === focusedArea) {
@@ -32,7 +34,7 @@ export function Column(props: ColumnProps) {
     else setCurrentTask(null);
   }, [status, focusedArea]);
 
-  const closeModal = () => dispatch({ type: 'ADD_MODAL', payload: null });
+  const closeModal = () => changeModal(null);
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -55,17 +57,9 @@ export function Column(props: ColumnProps) {
     }
 
     if (currentTask) {
-      if (key.name === "-") {
-        dispatch({ type: 'ADD_MODAL', payload: 'removeTask' });
-      }
-
-      if (key.name === 'm' && currentTask) {
-        dispatch({ type: 'ADD_MODAL', payload: 'moveTask' });
-      }
-
-      if (key.name === 'e' && currentTask) {
-        dispatch({ type: 'ADD_MODAL', payload: 'editTask' });
-      }
+      if (key.name === "-") changeModal('removeTask');
+      if (key.name === 'm') changeModal('moveTask');
+      if (key.name === 'e') changeModal('editTask');
     }
   })
 

@@ -4,8 +4,9 @@ import { SelectStatus } from '@/components/select-status';
 import { db } from "@/utils/db";
 import { theme } from "@/theme";
 import type { DbCategory, DbProject } from "../providers/categories/types";
-import { useProjectUiDispatch, useProjectUiState } from "../providers/project-page/project-page";
+import { useAppState } from "../providers/project-page/project-page";
 import { useInvalidateCategories } from "../providers/categories";
+import { useChangeModal } from "../providers/project-page/actions";
 
 type Props = {
   currentProjectId: number;
@@ -19,15 +20,15 @@ export function MoveProject(props: Props) {
   const otherCategories = categories.filter(cat => cat.id !== project?.category_id);
   const moveOptions = otherCategories.map(({ title, id }) => ({ label: title, value: id }))
   const [value, setValue] = useState<Option | null>(null);
-  const { currentModal } = useProjectUiState();
-  const dispatch = useProjectUiDispatch();
+  const { currentModal } = useAppState();
   const invalidateCategories = useInvalidateCategories();
+  const changeModal = useChangeModal();
 
   const onSelect = (option: Option) => {
     if (option === null || !value || !project) return;
     db.run('UPDATE projects SET category_id = ? WHERE id = ?', [value.value, project.id]);
     invalidateCategories()
-    dispatch({ type: 'CHANGE_MODAL', payload: null });
+    changeModal(null);
   }
 
   const onChange = (option: Option) => setValue(option);

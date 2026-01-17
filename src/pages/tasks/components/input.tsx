@@ -1,19 +1,11 @@
-import { useState } from 'react';
-import { useKeyboard } from '@opentui/react';
-import { useAppDispatch, useAppState } from '../provider/tasks-page';
-import { useInvalidateTasks } from '../provider/tasks';
 import { db } from '@/utils/db';
 import { theme } from '@/theme';
+import { useState } from 'react';
+import { useInvalidateTasks } from '../provider/tasks';
 
 export function Input() {
   const [todo, setTodo] = useState("")
-  const { currentModal } = useAppState();
-  const dispatch = useAppDispatch();
   const invalidateTasks = useInvalidateTasks();
-
-  useKeyboard((key) => {
-    if (key.name === "escape" && currentModal === 'newTask') dispatch({ type: 'ADD_MODAL', payload: null });
-  });
 
   const handleSubmit = async () => {
     db.run('INSERT INTO TASKS (title, status) VALUES (?, 1)', [todo]);
