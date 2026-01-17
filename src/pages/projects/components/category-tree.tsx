@@ -63,7 +63,7 @@ export function CategoryTree(props: Props) {
     }
 
     if (key.name === 'e') {
-      if (focusedCategory) changeModal('editProject');
+      if (focusedCategory && currentProject) changeModal('editProject');
       else if (categories.length > 1) changeModal('editCategory');
 
       invalidateCategories();

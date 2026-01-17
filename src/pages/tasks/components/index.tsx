@@ -8,6 +8,7 @@ import type { Status } from "../provider/tasks/types";
 import { UpsertTaskModal, type Task } from "./upsert-task";
 import { db } from "@/utils/db";
 import { useChangeModal, useUpdateFocusArea } from "../provider/tasks-page/actions";
+import { useMemo } from "react";
 
 const columns: Array<{ title: string, status: Status }> = [
   { title: "Todo (1)", status: "todo" },
@@ -28,6 +29,16 @@ export function Tasks(props: Props) {
   const invalidateTasks = useInvalidateTasks();
   const changeModal = useChangeModal();
   const updateFocusArea = useUpdateFocusArea();
+  // TODO: this is not performant, just done for learing porpuses, we could get projectName and categoryName from context
+  const parentsData = useMemo(() => {
+    return db.query<{ projectTitle: string, categoryTitle: string }, [number]>(
+      `select p.title as projectTitle, c.title as categoryTitle
+      from projects p
+      inner join categories c
+      on p.category_id = c.id
+      where p.id = ?`
+    ).get(projectId);
+  }, []);
 
   useKeyboard((key) => {
     if (currentModal !== null) return;
@@ -53,16 +64,23 @@ export function Tasks(props: Props) {
   const closeModal = () => changeModal(null);
 
   return (
-    <box backgroundColor={currentModal ? theme.popup_back : theme.bg}>
+    <>
+      <box
+        paddingTop={1}
+        paddingLeft={1}
+        paddingRight={1}
+        backgroundColor={currentModal ? theme.popup_back : theme.bg}
+      >
+        <box flexDirection='row'>
+          {columns.map(({ title, status }) => (
+            <Column title={title} status={status} tasks={tasks[status]} />
+          ))}
+        </box>
 
-      <box flexDirection='row' padding={1} gap={1} height='100%'>
-        {columns.map(({ title, status }) => (
-          <Column title={title} status={status} tasks={tasks[status]} />
-        ))}
+        {parentsData && <text>{parentsData.categoryTitle} / {parentsData.projectTitle}</text>}
       </box>
 
-      {currentModal === 'newTask' &&
-        <UpsertTaskModal close={closeModal} submitTask={submitNewTask} />}
-    </box>
+      {currentModal === 'newTask' && <UpsertTaskModal close={closeModal} submitTask={submitNewTask} />}
+    </>
   )
 }
