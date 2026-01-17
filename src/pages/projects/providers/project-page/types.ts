@@ -1,5 +1,5 @@
 export type State = {
-  currentModal: 'newProject' | 'newCategory' | 'removeProject' | 'removeCategory' | 'moveCategory' | 'editCategory' | 'editProject' | null;
+  currentModal: 'newProject' | 'newCategory' | 'removeProject' | 'removeCategory' | 'moveProject' | 'editCategory' | 'editProject' | null;
 };
 
 export type Action = | {

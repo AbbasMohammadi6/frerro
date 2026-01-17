@@ -4,7 +4,8 @@ import { useProjectUiDispatch, useProjectUiState } from "../providers/project-pa
 import { theme } from "@/theme";
 import { CategoryTree } from "./category-tree";
 import { db } from "@/utils/db";
-import { UpsertItemModal } from "@/components/upsert-item-modal";
+import { UpsertCategoryModal } from "./upsert-category";
+import UpsertProejct from "./upsert-project";
 
 export function Projects() {
   const { currentModal } = useProjectUiState();
@@ -16,7 +17,7 @@ export function Projects() {
     if (currentModal) return;
     if (key.name === 'n') dispatch({ type: 'CHANGE_MODAL', payload: 'newProject' });
     if (key.name === 'n' && key.shift) dispatch({ type: 'CHANGE_MODAL', payload: 'newCategory' });
-    if (key.name === 'm') dispatch({ type: 'CHANGE_MODAL', payload: 'moveCategory' });
+    if (key.name === 'm') dispatch({ type: 'CHANGE_MODAL', payload: 'moveProject' });
   });
 
   const closeModal = () => dispatch({ type: 'CHANGE_MODAL', payload: null });
@@ -27,27 +28,15 @@ export function Projects() {
     closeModal();
   }
 
-  const submitProject = (value: string) => {
-    db.run('INSERT INTO projects (title, category_id) VALUES (?, 1)', [value]);
-    invalidateCategories();
-    closeModal();
-  }
+  useKeyboard((key) => {
+    if (key.name === 'escape') closeModal();
+  });
 
   return (
     <box backgroundColor={currentModal ? theme.popup_back : theme.bg}>
       <CategoryTree categories={categories} />
-      {currentModal === 'newCategory' && (
-        <UpsertItemModal
-          close={closeModal}
-          entityName="category"
-          onSubmit={submitCategory}
-        />)}
-      {currentModal === 'newProject' && (
-        <UpsertItemModal
-          close={closeModal}
-          entityName="project"
-          onSubmit={submitProject}
-        />)}
+      {currentModal === 'newCategory' && <UpsertCategoryModal onSubmit={submitCategory} />}
+      {currentModal === 'newProject' && <UpsertProejct resetState={closeModal} />}
     </box>
   );
 }

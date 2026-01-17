@@ -1,5 +1,4 @@
-import { useMemo, useState, type ComponentProps } from "react";
-import { useKeyboard } from "@opentui/react"
+import { useMemo, useState } from "react";
 import { Modal, type Option } from "@/components";
 import { SelectStatus } from '@/components/select-status';
 import { db } from "@/utils/db";
@@ -24,15 +23,7 @@ export function MoveProject(props: Props) {
   const dispatch = useProjectUiDispatch();
   const invalidateCategories = useInvalidateCategories();
 
-  useKeyboard((key) => {
-    if (currentModal !== 'moveCategory') return;
-
-    if (key.name === 'escape') {
-      dispatch({ type: 'CHANGE_MODAL', payload: null });
-    }
-  });
-
-  const onSelect: ComponentProps<typeof SelectStatus>['onSelect'] = (option) => {
+  const onSelect = (option: Option) => {
     if (option === null || !value || !project) return;
     db.run('UPDATE projects SET category_id = ? WHERE id = ?', [value.value, project.id]);
     invalidateCategories()
@@ -43,17 +34,17 @@ export function MoveProject(props: Props) {
 
   return (
     <Modal>
-      <box borderColor={theme.cyan} title="Move Task...">
+      <box borderColor={theme.cyan} title="Move Project...">
         <text>
           Changing the category of <span fg={theme.green}>{project?.title}</span>?
         </text>
 
         <SelectStatus
-          focused
           value={value}
           onSelect={onSelect}
           options={moveOptions}
           currentModal={currentModal}
+          focused={currentModal === 'moveProject'}
           onChange={onChange as any /* TODO: fix this */}
         />
       </box>

@@ -3,13 +3,14 @@ import { Modal } from "@/components";
 import { theme } from "@/theme";
 
 type Props = {
-  entityName: string;
   close: () => void;
+  name: string;
   submitRemove: () => void;
+  type: 'project' | 'category' | 'task';
 }
 
 export function RemoveItemModal(props: Props) {
-  const { entityName, close, submitRemove } = props;
+  const { name, type, close, submitRemove } = props;
 
   useKeyboard((key) => {
     if (key.name === 'y') submitRemove();
@@ -18,9 +19,9 @@ export function RemoveItemModal(props: Props) {
 
   return (
     <Modal>
-      <box borderColor={theme.cyan} title="Remove Task...">
+      <box borderColor={theme.cyan} title={`Remove ${type} ...`}>
         <text>
-          Are you sure to remove <span fg={theme.red}>{entityName}</span>? y/n
+          Are you sure to remove <span fg={theme.red}>{name}</span>? y/n
         </text>
       </box>
     </Modal>

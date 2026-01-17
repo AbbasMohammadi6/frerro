@@ -5,7 +5,7 @@ import { useInvalidateTasks, useTasks } from "../provider/tasks";
 import { Column } from "./column";
 import { useAppDispatch, useAppState } from "../provider/tasks-page";
 import type { Status } from "../provider/tasks/types";
-import { UpsertTaskModal, type Task } from "./upsert-task-modal";
+import { UpsertTaskModal, type Task } from "./upsert-task";
 import { db } from "@/utils/db";
 
 const columns: Array<{ title: string, status: Status }> = [
@@ -43,7 +43,7 @@ export function Tasks(props: Props) {
   const submitNewTask = ({ title, description }: Task) => {
       db.run(
         'INSERT INTO TASKS (title, status, description, project_id) VALUES (?, 1, ?, ?)',
-        [title, description, projectId]
+        [title, description ?? null, projectId]
       );
       invalidateTasks();
   }

@@ -3,12 +3,12 @@ import { useEffect, useState } from "react"
 import { useAppDispatch, useAppState } from "../provider/tasks-page"
 import { theme } from "@/theme"
 import { TaskItem } from "./task-item"
-import { MoveModal } from "./move-modal"
+import { MoveModal } from "./move-task"
 import type { Status, Task } from "../provider/tasks/types"
 import { RemoveItemModal } from "@/components/remove-item-modal"
 import { db } from "@/utils/db"
 import { useInvalidateTasks } from "../provider/tasks"
-import { UpsertTaskModal, type Task as SubmmittedTask } from "./upsert-task-modal"
+import { UpsertTaskModal, type Task as SubmmittedTask } from "./upsert-task"
 
 interface ColumnProps {
   title: string;
@@ -101,9 +101,10 @@ export function Column(props: ColumnProps) {
         <>
           {currentModal === 'removeTask' &&
             <RemoveItemModal
+              type='task'
               close={closeModal}
+              name={currentTask.title}
               submitRemove={submitRemove}
-              entityName={currentTask.title}
             />}
 
           {currentModal === 'moveTask' &&

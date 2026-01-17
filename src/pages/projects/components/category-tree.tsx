@@ -6,10 +6,11 @@ import { SelectStatus, type Option } from "@/components";
 import type { NormalizedCategory } from "../providers/categories/types";
 import { useProjectUiDispatch, useProjectUiState } from "../providers/project-page/project-page";
 import { MoveProject } from "./move-project";
-import { UpsertItemModal } from "@/components/upsert-item-modal";
+import { UpsertCategoryModal } from "./upsert-category";
 import { db } from "@/utils/db";
 import { useInvalidateCategories } from "../providers/categories";
 import { RemoveItemModal } from "@/components/remove-item-modal";
+import UpsertProejct from "./upsert-project";
 
 type Props = {
   categories: NormalizedCategory[];
@@ -33,18 +34,12 @@ export function CategoryTree(props: Props) {
 
   const closeModal = () => dispatch({ type: 'CHANGE_MODAL', payload: null });
 
-  const submitEditProject = (value: string) => {
-    if (!currentProject) return;
-    db.run('UPDATE projects SET title = ? WHERE ID = ?', [value, currentProject.value]);
-    invalidateCategories();
-    closeModal();
-  }
-
   const submitEditCategory = (value: string) => {
     if (!currentCategory) return;
     db.run('UPDATE categories SET title = ? WHERE ID = ?', [value, currentCategory?.id]);
     invalidateCategories();
     closeModal();
+    setCurrentCategory(null); // TODO: save the new category in the state and test it
   }
 
   useKeyboard((key) => {
@@ -62,14 +57,21 @@ export function CategoryTree(props: Props) {
     if (key.name === '-') {
       if (focusedCategory) dispatch({ type: 'CHANGE_MODAL', payload: 'removeProject' });
       else if (categories.length > 1) dispatch({ type: 'CHANGE_MODAL', payload: 'removeCategory' });
+
+      invalidateCategories();
     }
 
     if (key.name === 'e') {
       if (focusedCategory) dispatch({ type: 'CHANGE_MODAL', payload: 'editProject' });
       else if (categories.length > 1) dispatch({ type: 'CHANGE_MODAL', payload: 'editCategory' });
+
+      invalidateCategories();
     }
 
     if (key.name === 'j' && focusedCategory === null) {
+      const firstCategory = categories.at(0);
+      if (currentCategory === null && firstCategory) return void setCurrentCategory(firstCategory);
+
       const currentIdx = categories.findIndex(c => c.id === currentCategory?.id);
       const nextOption = categories[currentIdx + 1];
       if (currentIdx !== -1 && nextOption !== undefined) {
@@ -79,6 +81,7 @@ export function CategoryTree(props: Props) {
 
     if (key.name === 'k' && focusedCategory === null) {
       if (categories[0] === undefined) return;
+
       const currentIdx = categories.findIndex(c => c.id === currentCategory?.id);
       const prevOption = categories[currentIdx - 1];
       if (currentIdx !== -1 && prevOption !== undefined) {
@@ -148,41 +151,39 @@ export function CategoryTree(props: Props) {
 
       {currentProject && (
         <>
-          {currentModal === 'moveCategory' &&
+          {currentModal === 'moveProject' &&
             <MoveProject currentProjectId={currentProject.value as number /* TODO: find a better way to do this */} />}
-
-          {currentModal === 'editProject' &&
-            <UpsertItemModal
-              close={closeModal}
-              entityName="project"
-              onSubmit={submitEditProject}
-              initialValue={currentProject.label}
-            />}
 
           {currentModal === 'removeProject' &&
             <RemoveItemModal
-              entityName={currentProject.label}
+              type='project'
               close={closeModal}
+              name={currentProject.label}
               submitRemove={submitRemoveProject}
             />}
         </>
       )}
 
+      {currentCategory && currentProject && currentModal === 'editProject' &&
+        <UpsertProejct
+          resetState={() => {
+            closeModal();
+            setCurrentProject(null);
+          }}
+          initialProject={{ title: currentProject.label, projectId: currentProject.value as number, categoryId: currentCategory?.id }}
+        />
+      }
 
       {currentCategory && (
         <>
           {currentModal === 'editCategory' &&
-            <UpsertItemModal
-              close={closeModal}
-              entityName="category"
-              onSubmit={submitEditCategory}
-              initialValue={currentCategory.title}
-            />}
+            <UpsertCategoryModal onSubmit={submitEditCategory} initialValue={currentCategory.title} />}
 
-          {currentModal === 'removeProject' &&
+          {currentModal === 'removeCategory' &&
             <RemoveItemModal
-              entityName={currentCategory.title}
+              type="category"
               close={closeModal}
+              name={currentCategory.title}
               submitRemove={submitRemoveCategory}
             />}
         </>

@@ -60,5 +60,5 @@ export function UpsertTaskModal(props: Props) {
         </box>
       </box>
     </Modal>
-  )
+  );
 }

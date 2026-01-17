@@ -4,6 +4,8 @@ import { theme } from "../theme";
 export type Option = { label: string, value: string | number };
 
 type Props = {
+  title?: string;
+  borderColor?: string;
   focused: boolean;
   options: Option[],
   onSelect: (o: Option) => void;
@@ -13,7 +15,7 @@ type Props = {
 };
 
 export function SelectStatus(props: Props) {
-  const { value, onChange, options, onSelect, focused/* , currentModal */ } = props;
+  const { title, value, onChange, options, onSelect, focused, borderColor } = props;
 
   useKeyboard((key) => {
     if (focused === false) return;
@@ -46,15 +48,15 @@ export function SelectStatus(props: Props) {
   });
 
   return (
-    <box>
+    <box borderColor={borderColor} title={title}>
       {options.map((option) => {
         // TODO: think of something for this value.value
         const isSelected = value?.value === option.value;
         return (
-        <text key={option.value} fg={isSelected ? theme.green : theme.gray}>
-          {isSelected ? "▶ " : "• "}{option.label}
-        </text>
-      )
+          <text key={option.value} fg={isSelected ? theme.green : theme.gray}>
+            {isSelected ? "▶ " : "• "}{option.label}
+          </text>
+        )
       })}
     </box>
   );
